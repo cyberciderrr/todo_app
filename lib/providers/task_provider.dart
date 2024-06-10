@@ -7,7 +7,7 @@ class TaskProvider with ChangeNotifier {
   List<Task> get tasks => _tasks;
 
   void addTask(String title, String description, String categoryId) {
-    _tasks.add(Task(title: title, description: description, categoryId: categoryId));
+    _tasks.add(Task(title: title, description: description, categoryId: categoryId, id: ''));
     notifyListeners();
   }
 

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'data/models/category.dart';
-import 'data/models/task.dart';
-import 'package:flutter/material.dart';
 import 'data/presentations/screens/task_screen.dart';  // Подключаем TaskScreen
 
 void main() {

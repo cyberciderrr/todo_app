@@ -15,8 +15,10 @@ class Task {
     this.isCompleted = false,
     this.isFavourite = false,
     required this.categoryId,
-  })  : id = Uuid().v4(),
-        createdAt = DateTime.now();
+    String? id,
+    DateTime? createdAt,
+  })  : id = id ?? Uuid().v4(),
+        createdAt = createdAt ?? DateTime.now();
 
   Task.fromJson(Map<String, dynamic> json)
       : id = json['id'],

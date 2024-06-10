@@ -3,8 +3,25 @@ import 'package:provider/provider.dart';
 import '/providers/category_provider.dart';
 import './task_screen.dart';
 
-class CategoryScreen extends StatelessWidget {
-  final TextEditingController _nameController = TextEditingController();
+class CategoryScreen extends StatefulWidget {
+  @override
+  _CategoryScreenState createState() => _CategoryScreenState();
+}
+
+class _CategoryScreenState extends State<CategoryScreen> {
+  late TextEditingController _nameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +72,10 @@ class CategoryScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => TaskScreen(categoryId: category.id, categoryName: '',),
+                            builder: (context) => TaskScreen(
+                              categoryId: category.id,
+                              categoryName: category.name,
+                            ),
                           ),
                         );
                       },

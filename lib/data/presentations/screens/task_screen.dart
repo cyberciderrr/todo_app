@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/task.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-
+import 'task_detail_screen.dart';
 
 class TaskScreen extends StatefulWidget {
   final String categoryId;
@@ -25,20 +25,38 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   void _loadTasks() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? tasksJson = prefs.getString('tasks_${widget.categoryId}');
-    if (tasksJson != null) {
-      final List<dynamic> tasksList = jsonDecode(tasksJson);
-      setState(() {
-        tasks = tasksList.map((json) => Task.fromJson(json)).toList();
-      });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? tasksJson = prefs.getString('tasks_${widget.categoryId}');
+      if (tasksJson != null) {
+        final List<dynamic> tasksList = jsonDecode(tasksJson);
+        setState(() {
+          tasks = tasksList.map((json) => Task.fromJson(json)).toList();
+        });
+      }
+    } catch (e) {
+      print('Failed to load tasks: $e');
+      _showErrorSnackBar('Не удалось загрузить задачи');
     }
   }
 
+  void _showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+  
   void _saveTasks() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String tasksJson = jsonEncode(tasks.map((task) => task.toJson()).toList());
-    prefs.setString('tasks_${widget.categoryId}', tasksJson);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String tasksJson = jsonEncode(tasks.map((task) => task.toJson()).toList());
+      prefs.setString('tasks_${widget.categoryId}', tasksJson);
+    } catch (e) {
+      print('Failed to save tasks: $e');
+      _showErrorSnackBar('Не удалось сохранить задачи');
+    }
   }
 
   void _addTask(String title, String description) {
@@ -48,10 +66,20 @@ class _TaskScreenState extends State<TaskScreen> {
     });
   }
 
-  void _deleteTask(String id) {
+  void _deleteTask(Task task) {
     setState(() {
-      tasks.removeWhere((task) => task.id == id);
+      tasks.remove(task);
       _saveTasks();
+    });
+  }
+
+  void _updateTask(Task updatedTask) {
+    setState(() {
+      final index = tasks.indexWhere((task) => task.id == updatedTask.id);
+      if (index != -1) {
+        tasks[index] = updatedTask;
+        _saveTasks();
+      }
     });
   }
 
@@ -65,6 +93,8 @@ class _TaskScreenState extends State<TaskScreen> {
           isCompleted: !tasks[index].isCompleted,
           isFavourite: tasks[index].isFavourite,
           categoryId: tasks[index].categoryId,
+          id: tasks[index].id,
+          createdAt: tasks[index].createdAt,
         );
         _saveTasks();
       }
@@ -81,6 +111,8 @@ class _TaskScreenState extends State<TaskScreen> {
           isCompleted: tasks[index].isCompleted,
           isFavourite: !tasks[index].isFavourite,
           categoryId: tasks[index].categoryId,
+          id: tasks[index].id,
+          createdAt: tasks[index].createdAt,
         );
         _saveTasks();
       }
@@ -188,8 +220,19 @@ class _TaskScreenState extends State<TaskScreen> {
                           onPressed: () => _toggleTaskFavourite(task.id),
                         ),
                         IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () => _deleteTask(task.id),
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TaskDetailScreen(
+                                  task: task,
+                                  onSave: _updateTask,
+                                  onDelete: _deleteTask,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
