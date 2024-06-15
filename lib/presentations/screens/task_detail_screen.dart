@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import'../../models/task.dart';
-
+import '../../domain/entities/task.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../blocs/task/task_bloc.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final Task task;
-  final Function(Task) onSave;
-  final Function(Task) onDelete;
 
-  TaskDetailScreen({required this.task, required this.onSave, required this.onDelete});
+  TaskDetailScreen({required this.task});
 
   @override
   _TaskDetailScreenState createState() => _TaskDetailScreenState();
@@ -26,20 +25,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   void _saveTask() {
     final updatedTask = Task(
+      id: widget.task.id,
       title: _titleController.text,
       description: _descriptionController.text,
       isCompleted: widget.task.isCompleted,
       isFavourite: widget.task.isFavourite,
       categoryId: widget.task.categoryId,
-      id: widget.task.id,
       createdAt: widget.task.createdAt,
     );
-    widget.onSave(updatedTask);
+    BlocProvider.of<TaskBloc>(context).add(UpdateTaskEvent(updatedTask));
     Navigator.of(context).pop();
   }
 
   void _deleteTask() {
-    widget.onDelete(widget.task);
+    BlocProvider.of<TaskBloc>(context).add(RemoveTaskEvent(widget.task));
     Navigator.of(context).pop();
   }
 
@@ -48,6 +47,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Редактировать задачу'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: _saveTask,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -64,30 +69,23 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               ),
             ),
             SizedBox(height: 20),
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(
-                labelText: 'Описание',
-                border: OutlineInputBorder(),
+            Expanded(
+              child: TextField(
+                controller: _descriptionController,
+                decoration: InputDecoration(
+                  labelText: 'Описание',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: null,
+                expands: true,
               ),
-              maxLines: 5,
             ),
-            Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _deleteTask,
-                  icon: Icon(Icons.delete),
-                  label: Text('Удалить'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _saveTask,
-                  icon: Icon(Icons.save),
-                  label: Text('Сохранить'),
-                ),
-              ],
+            SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: _deleteTask,
+              icon: Icon(Icons.delete),
+              label: Text('Удалить'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             ),
           ],
         ),
