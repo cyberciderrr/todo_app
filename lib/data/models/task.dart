@@ -1,45 +1,41 @@
-import '../../domain/entities/task.dart';
+import 'package:uuid/uuid.dart';
 
-class TaskModel extends Task {
+class TaskModel {
+  final String id;
+  final String title;
+  final String description;
+  final bool isCompleted;
+  final bool isFavourite;
+  final DateTime createdAt;
+  final String categoryId;
+
   TaskModel({
-    required String id,
-    required String title,
-    required String description,
-    required bool isCompleted,
-    required bool isFavourite,
-    required String categoryId,
-    required DateTime createdAt,
-  }) : super(
-    id: id,
-    title: title,
-    description: description,
-    isCompleted: isCompleted,
-    isFavourite: isFavourite,
-    categoryId: categoryId,
-    createdAt: createdAt,
-  );
+    required this.title,
+    required this.description,
+    this.isCompleted = false,
+    this.isFavourite = false,
+    required this.categoryId,
+    String? id,
+    DateTime? createdAt,
+  })  : id = id ?? Uuid().v4(),
+        createdAt = createdAt ?? DateTime.now();
 
-  factory TaskModel.fromJson(Map<String, dynamic> json) {
-    return TaskModel(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      isCompleted: json['isCompleted'],
-      isFavourite: json['isFavourite'],
-      categoryId: json['categoryId'],
-      createdAt: DateTime.parse(json['createdAt']),
-    );
-  }
+  TaskModel.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        title = json['title'],
+        description = json['description'],
+        isCompleted = json['isCompleted'],
+        isFavourite = json['isFavourite'],
+        createdAt = DateTime.parse(json['createdAt']),
+        categoryId = json['categoryId'];
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'isCompleted': isCompleted,
-      'isFavourite': isFavourite,
-      'categoryId': categoryId,
-      'createdAt': createdAt.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'description': description,
+    'isCompleted': isCompleted,
+    'isFavourite': isFavourite,
+    'createdAt': createdAt.toIso8601String(),
+    'categoryId': categoryId,
+  };
 }

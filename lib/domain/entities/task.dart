@@ -4,8 +4,8 @@ class Task {
   final String description;
   final bool isCompleted;
   final bool isFavourite;
-  final String categoryId;
   final DateTime createdAt;
+  final String categoryId;
 
   Task({
     required this.id,
@@ -13,8 +13,8 @@ class Task {
     required this.description,
     required this.isCompleted,
     required this.isFavourite,
-    required this.categoryId,
     required this.createdAt,
+    required this.categoryId,
   });
 
   Task copyWith({
@@ -23,8 +23,8 @@ class Task {
     String? description,
     bool? isCompleted,
     bool? isFavourite,
-    String? categoryId,
     DateTime? createdAt,
+    String? categoryId,
   }) {
     return Task(
       id: id ?? this.id,
@@ -32,8 +32,8 @@ class Task {
       description: description ?? this.description,
       isCompleted: isCompleted ?? this.isCompleted,
       isFavourite: isFavourite ?? this.isFavourite,
-      categoryId: categoryId ?? this.categoryId,
       createdAt: createdAt ?? this.createdAt,
+      categoryId: categoryId ?? this.categoryId,
     );
   }
 }

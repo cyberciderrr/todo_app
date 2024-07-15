@@ -1,16 +1,12 @@
 import '../entities/task.dart';
 import '../repositories/task_repository.dart';
-import 'usecase.dart';
 
-class AddTask implements UseCase<void, Task> {
+class AddTask {
   final TaskRepository repository;
 
-  AddTask(this.repository);
+  const AddTask(this.repository);
 
-  @override
-  Future<void> call(Task task) async {
-    final tasks = await repository.getTasks(task.categoryId);
-    tasks.add(task);
-    await repository.saveTasks(task.categoryId, tasks);
+  Future<void> call(Task task) {
+    return repository.addTask(task);
   }
 }

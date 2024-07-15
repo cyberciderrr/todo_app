@@ -1,25 +1,22 @@
-import '../../domain/entities/category.dart';
+import 'package:uuid/uuid.dart';
 
-class CategoryModel extends Category {
-  CategoryModel({
-    required String id,
-    required String name, super.createdAt
-  }) : super(
-    id: id,
-    name: name,
-  );
+class CategoryModel {
+  final String id;
+  final String name;
+  final DateTime createdAt;
 
-  factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    return CategoryModel(
-      id: json['id'],
-      name: json['name'],
-    );
-  }
+  CategoryModel({required this.name, String? id})
+      : id = id ?? Uuid().v4(),
+        createdAt = DateTime.now();
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
+  CategoryModel.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        createdAt = DateTime.parse(json['createdAt']);
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'createdAt': createdAt.toIso8601String(),
+  };
 }

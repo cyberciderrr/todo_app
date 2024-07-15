@@ -1,12 +1,12 @@
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/category.dart';
-import '../../core/exceptions.dart';
 
 abstract class CategoryLocalDataSource {
-  Future<List<CategoryModel>> getCategories();
-  Future<void> saveCategories(List<CategoryModel> categories);
+  Future<void> addCategory(CategoryModel category);
+  Future<void> removeCategory(String id);
+  Future<void> updateCategory(CategoryModel category);
+  Future<List<CategoryModel>> getAllCategories();
 }
 
 class CategoryLocalDataSourceImpl implements CategoryLocalDataSource {
@@ -14,29 +14,40 @@ class CategoryLocalDataSourceImpl implements CategoryLocalDataSource {
 
   CategoryLocalDataSourceImpl({required this.sharedPreferences});
 
+  static const CATEGORIES_KEY = 'CATEGORIES';
+
   @override
-  Future<List<CategoryModel>> getCategories() async {
-    try {
-      final String? categoriesJson = sharedPreferences.getString('categories');
-      if (categoriesJson != null) {
-        final List<dynamic> categoriesList = jsonDecode(categoriesJson);
-        return categoriesList.map((json) => CategoryModel.fromJson(json)).toList();
-      } else {
-        return [];
-      }
-    } catch (e) {
-      throw CacheException();
+  Future<void> addCategory(CategoryModel category) async {
+    final categories = await getAllCategories();
+    categories.add(category);
+    await sharedPreferences.setString(CATEGORIES_KEY, jsonEncode(categories));
+  }
+
+  @override
+  Future<void> removeCategory(String id) async {
+    final categories = await getAllCategories();
+    categories.removeWhere((category) => category.id == id);
+    await sharedPreferences.setString(CATEGORIES_KEY, jsonEncode(categories));
+  }
+
+  @override
+  Future<void> updateCategory(CategoryModel category) async {
+    final categories = await getAllCategories();
+    final index = categories.indexWhere((c) => c.id == category.id);
+    if (index != -1) {
+      categories[index] = category;
+      await sharedPreferences.setString(CATEGORIES_KEY, jsonEncode(categories));
     }
   }
 
   @override
-  Future<void> saveCategories(List<CategoryModel> categories) async {
-    try {
-      final String categoriesJson = jsonEncode(categories.map((category) => category.toJson()).toList());
-      await sharedPreferences.setString('categories', categoriesJson);
-    } catch (e) {
-      throw CacheException();
+  Future<List<CategoryModel>> getAllCategories() async {
+    final jsonString = sharedPreferences.getString(CATEGORIES_KEY);
+    if (jsonString != null) {
+      final List decodedJson = jsonDecode(jsonString);
+      return decodedJson.map((json) => CategoryModel.fromJson(json)).toList();
+    } else {
+      return [];
     }
   }
-
 }
