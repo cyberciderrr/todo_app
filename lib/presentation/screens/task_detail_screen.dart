@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import'../../models/task.dart';
-
+import '../../domain/entities/task.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final Task task;
@@ -26,13 +25,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   void _saveTask() {
     final updatedTask = Task(
+      id: widget.task.id,
       title: _titleController.text,
       description: _descriptionController.text,
       isCompleted: widget.task.isCompleted,
       isFavourite: widget.task.isFavourite,
-      categoryId: widget.task.categoryId,
-      id: widget.task.id,
       createdAt: widget.task.createdAt,
+      categoryId: widget.task.categoryId,
     );
     widget.onSave(updatedTask);
     Navigator.of(context).pop();

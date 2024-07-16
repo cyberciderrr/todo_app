@@ -1,11 +1,22 @@
 import 'package:uuid/uuid.dart';
 
-class Category {
-  late final String id;
-  late final String name;
+class CategoryModel {
+  final String id;
+  final String name;
   final DateTime createdAt;
 
-  Category({required this.name})
-      : id = Uuid().v4(),
+  CategoryModel({required this.name, String? id})
+      : id = id ?? Uuid().v4(),
         createdAt = DateTime.now();
+
+  CategoryModel.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        createdAt = DateTime.parse(json['createdAt']);
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'createdAt': createdAt.toIso8601String(),
+  };
 }

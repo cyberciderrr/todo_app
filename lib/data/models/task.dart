@@ -1,6 +1,6 @@
 import 'package:uuid/uuid.dart';
 
-class Task {
+class TaskModel {
   final String id;
   final String title;
   final String description;
@@ -9,7 +9,7 @@ class Task {
   final DateTime createdAt;
   final String categoryId;
 
-  Task({
+  TaskModel({
     required this.title,
     required this.description,
     this.isCompleted = false,
@@ -20,7 +20,7 @@ class Task {
   })  : id = id ?? Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
 
-  Task.fromJson(Map<String, dynamic> json)
+  TaskModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         title = json['title'],
         description = json['description'],
