@@ -5,7 +5,7 @@ class CategoryModel {
   final String name;
   final DateTime createdAt;
 
-  CategoryModel({required this.name, String? id})
+  CategoryModel({required this.name, String? id, required createdAt})
       : id = id ?? Uuid().v4(),
         createdAt = DateTime.now();
 

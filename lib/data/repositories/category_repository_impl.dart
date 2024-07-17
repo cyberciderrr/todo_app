@@ -10,7 +10,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
   @override
   Future<void> addCategory(Category category) {
-    return localDataSource.addCategory(CategoryModel(name: category.name, id: category.id));
+    return localDataSource.addCategory(CategoryModel(name: category.name, id: category.id, createdAt: category.createdAt));
   }
 
   @override
@@ -20,7 +20,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
   @override
   Future<void> updateCategory(Category category) {
-    return localDataSource.updateCategory(CategoryModel(name: category.name, id: category.id));
+    return localDataSource.updateCategory(CategoryModel(name: category.name, id: category.id, createdAt: category.createdAt));
   }
 
   @override
