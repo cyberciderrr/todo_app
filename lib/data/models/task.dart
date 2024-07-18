@@ -8,6 +8,7 @@ class TaskModel {
   final bool isFavourite;
   final DateTime createdAt;
   final String categoryId;
+  final String? photoUrl;
 
   TaskModel({
     required this.title,
@@ -15,6 +16,7 @@ class TaskModel {
     this.isCompleted = false,
     this.isFavourite = false,
     required this.categoryId,
+    this.photoUrl,
     String? id,
     DateTime? createdAt,
   })  : id = id ?? Uuid().v4(),
@@ -27,7 +29,8 @@ class TaskModel {
         isCompleted = json['isCompleted'],
         isFavourite = json['isFavourite'],
         createdAt = DateTime.parse(json['createdAt']),
-        categoryId = json['categoryId'];
+        categoryId = json['categoryId'],
+        photoUrl = json['photoUrl'];
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -37,5 +40,6 @@ class TaskModel {
     'isFavourite': isFavourite,
     'createdAt': createdAt.toIso8601String(),
     'categoryId': categoryId,
+    'photoUrl': photoUrl,
   };
 }

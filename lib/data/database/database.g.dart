@@ -299,9 +299,23 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'REFERENCES categories(id)');
+  static const VerificationMeta _photoUrlMeta =
+      const VerificationMeta('photoUrl');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, title, description, isCompleted, isFavourite, createdAt, categoryId];
+  late final GeneratedColumn<String> photoUrl = GeneratedColumn<String>(
+      'photo_url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        title,
+        description,
+        isCompleted,
+        isFavourite,
+        createdAt,
+        categoryId,
+        photoUrl
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -353,6 +367,10 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     } else if (isInserting) {
       context.missing(_categoryIdMeta);
     }
+    if (data.containsKey('photo_url')) {
+      context.handle(_photoUrlMeta,
+          photoUrl.isAcceptableOrUnknown(data['photo_url']!, _photoUrlMeta));
+    }
     return context;
   }
 
@@ -376,6 +394,8 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       categoryId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}category_id'])!,
+      photoUrl: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}photo_url']),
     );
   }
 
@@ -393,6 +413,7 @@ class Task extends DataClass implements Insertable<Task> {
   final bool isFavourite;
   final DateTime createdAt;
   final String categoryId;
+  final String? photoUrl;
   const Task(
       {required this.id,
       required this.title,
@@ -400,7 +421,8 @@ class Task extends DataClass implements Insertable<Task> {
       required this.isCompleted,
       required this.isFavourite,
       required this.createdAt,
-      required this.categoryId});
+      required this.categoryId,
+      this.photoUrl});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -413,6 +435,9 @@ class Task extends DataClass implements Insertable<Task> {
     map['is_favourite'] = Variable<bool>(isFavourite);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['category_id'] = Variable<String>(categoryId);
+    if (!nullToAbsent || photoUrl != null) {
+      map['photo_url'] = Variable<String>(photoUrl);
+    }
     return map;
   }
 
@@ -427,6 +452,9 @@ class Task extends DataClass implements Insertable<Task> {
       isFavourite: Value(isFavourite),
       createdAt: Value(createdAt),
       categoryId: Value(categoryId),
+      photoUrl: photoUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(photoUrl),
     );
   }
 
@@ -441,6 +469,7 @@ class Task extends DataClass implements Insertable<Task> {
       isFavourite: serializer.fromJson<bool>(json['isFavourite']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       categoryId: serializer.fromJson<String>(json['categoryId']),
+      photoUrl: serializer.fromJson<String?>(json['photoUrl']),
     );
   }
   @override
@@ -454,6 +483,7 @@ class Task extends DataClass implements Insertable<Task> {
       'isFavourite': serializer.toJson<bool>(isFavourite),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'categoryId': serializer.toJson<String>(categoryId),
+      'photoUrl': serializer.toJson<String?>(photoUrl),
     };
   }
 
@@ -464,7 +494,8 @@ class Task extends DataClass implements Insertable<Task> {
           bool? isCompleted,
           bool? isFavourite,
           DateTime? createdAt,
-          String? categoryId}) =>
+          String? categoryId,
+          Value<String?> photoUrl = const Value.absent()}) =>
       Task(
         id: id ?? this.id,
         title: title ?? this.title,
@@ -473,6 +504,7 @@ class Task extends DataClass implements Insertable<Task> {
         isFavourite: isFavourite ?? this.isFavourite,
         createdAt: createdAt ?? this.createdAt,
         categoryId: categoryId ?? this.categoryId,
+        photoUrl: photoUrl.present ? photoUrl.value : this.photoUrl,
       );
   Task copyWithCompanion(TasksCompanion data) {
     return Task(
@@ -487,6 +519,7 @@ class Task extends DataClass implements Insertable<Task> {
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       categoryId:
           data.categoryId.present ? data.categoryId.value : this.categoryId,
+      photoUrl: data.photoUrl.present ? data.photoUrl.value : this.photoUrl,
     );
   }
 
@@ -499,14 +532,15 @@ class Task extends DataClass implements Insertable<Task> {
           ..write('isCompleted: $isCompleted, ')
           ..write('isFavourite: $isFavourite, ')
           ..write('createdAt: $createdAt, ')
-          ..write('categoryId: $categoryId')
+          ..write('categoryId: $categoryId, ')
+          ..write('photoUrl: $photoUrl')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, title, description, isCompleted, isFavourite, createdAt, categoryId);
+  int get hashCode => Object.hash(id, title, description, isCompleted,
+      isFavourite, createdAt, categoryId, photoUrl);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -517,7 +551,8 @@ class Task extends DataClass implements Insertable<Task> {
           other.isCompleted == this.isCompleted &&
           other.isFavourite == this.isFavourite &&
           other.createdAt == this.createdAt &&
-          other.categoryId == this.categoryId);
+          other.categoryId == this.categoryId &&
+          other.photoUrl == this.photoUrl);
 }
 
 class TasksCompanion extends UpdateCompanion<Task> {
@@ -528,6 +563,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
   final Value<bool> isFavourite;
   final Value<DateTime> createdAt;
   final Value<String> categoryId;
+  final Value<String?> photoUrl;
   final Value<int> rowid;
   const TasksCompanion({
     this.id = const Value.absent(),
@@ -537,6 +573,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.isFavourite = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.categoryId = const Value.absent(),
+    this.photoUrl = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   TasksCompanion.insert({
@@ -547,6 +584,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.isFavourite = const Value.absent(),
     this.createdAt = const Value.absent(),
     required String categoryId,
+    this.photoUrl = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         title = Value(title),
@@ -559,6 +597,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Expression<bool>? isFavourite,
     Expression<DateTime>? createdAt,
     Expression<String>? categoryId,
+    Expression<String>? photoUrl,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -569,6 +608,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       if (isFavourite != null) 'is_favourite': isFavourite,
       if (createdAt != null) 'created_at': createdAt,
       if (categoryId != null) 'category_id': categoryId,
+      if (photoUrl != null) 'photo_url': photoUrl,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -581,6 +621,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       Value<bool>? isFavourite,
       Value<DateTime>? createdAt,
       Value<String>? categoryId,
+      Value<String?>? photoUrl,
       Value<int>? rowid}) {
     return TasksCompanion(
       id: id ?? this.id,
@@ -590,6 +631,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       isFavourite: isFavourite ?? this.isFavourite,
       createdAt: createdAt ?? this.createdAt,
       categoryId: categoryId ?? this.categoryId,
+      photoUrl: photoUrl ?? this.photoUrl,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -618,6 +660,9 @@ class TasksCompanion extends UpdateCompanion<Task> {
     if (categoryId.present) {
       map['category_id'] = Variable<String>(categoryId.value);
     }
+    if (photoUrl.present) {
+      map['photo_url'] = Variable<String>(photoUrl.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -634,6 +679,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
           ..write('isFavourite: $isFavourite, ')
           ..write('createdAt: $createdAt, ')
           ..write('categoryId: $categoryId, ')
+          ..write('photoUrl: $photoUrl, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -767,6 +813,7 @@ typedef $$TasksTableCreateCompanionBuilder = TasksCompanion Function({
   Value<bool> isFavourite,
   Value<DateTime> createdAt,
   required String categoryId,
+  Value<String?> photoUrl,
   Value<int> rowid,
 });
 typedef $$TasksTableUpdateCompanionBuilder = TasksCompanion Function({
@@ -777,6 +824,7 @@ typedef $$TasksTableUpdateCompanionBuilder = TasksCompanion Function({
   Value<bool> isFavourite,
   Value<DateTime> createdAt,
   Value<String> categoryId,
+  Value<String?> photoUrl,
   Value<int> rowid,
 });
 
@@ -804,6 +852,7 @@ class $$TasksTableTableManager extends RootTableManager<
             Value<bool> isFavourite = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<String> categoryId = const Value.absent(),
+            Value<String?> photoUrl = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               TasksCompanion(
@@ -814,6 +863,7 @@ class $$TasksTableTableManager extends RootTableManager<
             isFavourite: isFavourite,
             createdAt: createdAt,
             categoryId: categoryId,
+            photoUrl: photoUrl,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -824,6 +874,7 @@ class $$TasksTableTableManager extends RootTableManager<
             Value<bool> isFavourite = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             required String categoryId,
+            Value<String?> photoUrl = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               TasksCompanion.insert(
@@ -834,6 +885,7 @@ class $$TasksTableTableManager extends RootTableManager<
             isFavourite: isFavourite,
             createdAt: createdAt,
             categoryId: categoryId,
+            photoUrl: photoUrl,
             rowid: rowid,
           ),
         ));
@@ -869,6 +921,11 @@ class $$TasksTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
       column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get photoUrl => $state.composableBuilder(
+      column: $state.table.photoUrl,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -915,6 +972,11 @@ class $$TasksTableOrderingComposer
 
   ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
       column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get photoUrl => $state.composableBuilder(
+      column: $state.table.photoUrl,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 

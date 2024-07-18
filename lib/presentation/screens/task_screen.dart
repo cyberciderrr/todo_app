@@ -123,18 +123,21 @@ class AddTaskDialog extends StatefulWidget {
 class _AddTaskDialogState extends State<AddTaskDialog> {
   late TextEditingController titleController;
   late TextEditingController descriptionController;
+  late TextEditingController photoUrlController;
 
   @override
   void initState() {
     super.initState();
     titleController = TextEditingController();
     descriptionController = TextEditingController();
+    photoUrlController = TextEditingController();
   }
 
   @override
   void dispose() {
     titleController.dispose();
     descriptionController.dispose();
+    photoUrlController.dispose();
     super.dispose();
   }
 
@@ -153,6 +156,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             controller: descriptionController,
             decoration: InputDecoration(hintText: 'Описание задачи'),
           ),
+          TextField(
+            controller: photoUrlController, // Поле для ввода URL фото
+            decoration: InputDecoration(hintText: 'URL фотографии'),
+          ),
         ],
       ),
       actions: [
@@ -169,6 +176,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 titleController.text,
                 descriptionController.text,
                 widget.categoryId,
+                photoUrlController.text.isNotEmpty ? photoUrlController.text : null,
               );
               Navigator.of(context).pop();
             } else {

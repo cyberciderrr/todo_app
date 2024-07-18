@@ -31,7 +31,7 @@ class TaskCubit extends Cubit<TaskState> {
     }
   }
 
-  Future<void> addTask(String title, String description, String categoryId) async {
+  Future<void> addTask(String title, String description, String categoryId, String? photoUrl) async {
     try {
       final task = Task(
         id: '',
@@ -41,6 +41,7 @@ class TaskCubit extends Cubit<TaskState> {
         isFavourite: false,
         createdAt: DateTime.now(),
         categoryId: categoryId,
+        photoUrl: photoUrl,
       );
       await addTaskUseCase.call(task);
       loadTasks(categoryId);

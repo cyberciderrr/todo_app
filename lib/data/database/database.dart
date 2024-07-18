@@ -27,10 +27,12 @@ class Tasks extends Table {
   BoolColumn get isFavourite => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   TextColumn get categoryId => text().customConstraint('REFERENCES categories(id)')();
+  TextColumn get photoUrl => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
 }
+
 
 @DriftDatabase(tables: [Categories, Tasks])
 class AppDatabase extends _$AppDatabase {
@@ -39,13 +41,13 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 1;
 
-  // Методы для работы с категориями
+
   Future<List<Category>> getAllCategories() => select(categories).get();
   Future<void> insertCategory(Category category) => into(categories).insert(category);
   Future<void> deleteCategory(String id) => (delete(categories)..where((c) => c.id.equals(id))).go();
   Future<void> updateCategory(Category category) => update(categories).replace(category);
 
-  // Методы для работы с задачами
+
   Future<List<Task>> getTasksByCategory(String categoryId) => (select(tasks)..where((t) => t.categoryId.equals(categoryId))).get();
   Future<void> insertTask(Task task) => into(tasks).insert(task);
   Future<void> deleteTask(String id) => (delete(tasks)..where((t) => t.id.equals(id))).go();

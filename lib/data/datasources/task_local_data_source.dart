@@ -19,11 +19,12 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
     await database.insertTask(TasksCompanion(
       id: Value(task.id),
       title: Value(task.title),
-      description: Value(task.description),
+      description: Value((task.description != null ? Value(task.description) : Value.absent()) as String?), // Обработка nullable поля
       isCompleted: Value(task.isCompleted),
       isFavourite: Value(task.isFavourite),
       createdAt: Value(task.createdAt),
       categoryId: Value(task.categoryId),
+      photoUrl: Value((task.photoUrl != null ? Value(task.photoUrl) : Value.absent()) as String?), // Обработка nullable поля
     ) as Task);
   }
 
@@ -37,11 +38,12 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
     await database.updateTask(TasksCompanion(
       id: Value(task.id),
       title: Value(task.title),
-      description: Value(task.description),
+      description: Value((task.description != null ? Value(task.description) : Value.absent()) as String?), // Обработка nullable поля
       isCompleted: Value(task.isCompleted),
       isFavourite: Value(task.isFavourite),
       createdAt: Value(task.createdAt),
       categoryId: Value(task.categoryId),
+      photoUrl: Value((task.photoUrl != null ? Value(task.photoUrl) : Value.absent()) as String?), // Обработка nullable поля
     ) as Task);
   }
 
@@ -56,6 +58,7 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
       isFavourite: t.isFavourite,
       createdAt: t.createdAt,
       categoryId: t.categoryId,
+      photoUrl: t.photoUrl,
     )).toList();
   }
 }

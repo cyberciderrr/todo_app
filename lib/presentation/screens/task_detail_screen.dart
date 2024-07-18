@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'photo_search_screen.dart';
 import '../../domain/entities/task.dart';
 
 class TaskDetailScreen extends StatefulWidget {
@@ -15,12 +16,14 @@ class TaskDetailScreen extends StatefulWidget {
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+  String? _photoUrl;
 
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.task.title);
     _descriptionController = TextEditingController(text: widget.task.description);
+    _photoUrl = widget.task.photoUrl;
   }
 
   void _saveTask() {
@@ -32,6 +35,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       isFavourite: widget.task.isFavourite,
       createdAt: widget.task.createdAt,
       categoryId: widget.task.categoryId,
+      photoUrl: _photoUrl,
     );
     widget.onSave(updatedTask);
     Navigator.of(context).pop();
@@ -46,19 +50,19 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Редактировать задачу'),
+        title: Text('Edit Task'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Создана: ${widget.task.createdAt}'),
+            Text('Created: ${widget.task.createdAt}'),
             SizedBox(height: 20),
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
-                labelText: 'Заголовок',
+                labelText: 'Title',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -66,11 +70,15 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             TextField(
               controller: _descriptionController,
               decoration: InputDecoration(
-                labelText: 'Описание',
+                labelText: 'Description',
                 border: OutlineInputBorder(),
               ),
               maxLines: 5,
             ),
+            SizedBox(height: 20),
+            _photoUrl != null
+                ? Image.network(_photoUrl!)
+                : Text('No photo attached'),
             Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,13 +86,33 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 ElevatedButton.icon(
                   onPressed: _deleteTask,
                   icon: Icon(Icons.delete),
-                  label: Text('Удалить'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  label: Text('Delete'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    final selectedUrl = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PhotoSearchScreen(
+                          onPhotoSelected: (url) {
+                            setState(() {
+                              _photoUrl = url;
+                            });
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.photo),
+                  label: Text('Attach Photo'),
                 ),
                 ElevatedButton.icon(
                   onPressed: _saveTask,
                   icon: Icon(Icons.save),
-                  label: Text('Сохранить'),
+                  label: Text('Save'),
                 ),
               ],
             ),

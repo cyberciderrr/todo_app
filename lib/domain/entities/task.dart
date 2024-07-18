@@ -6,6 +6,8 @@ class Task {
   final bool isFavourite;
   final DateTime createdAt;
   final String categoryId;
+  final String? photoUrl;
+
 
   Task({
     required this.id,
@@ -15,7 +17,10 @@ class Task {
     required this.isFavourite,
     required this.createdAt,
     required this.categoryId,
+    required this.photoUrl,
   });
+
+
 
   Task copyWith({
     String? id,
@@ -34,6 +39,7 @@ class Task {
       isFavourite: isFavourite ?? this.isFavourite,
       createdAt: createdAt ?? this.createdAt,
       categoryId: categoryId ?? this.categoryId,
+      photoUrl: photoUrl ?? this.photoUrl,
     );
   }
 }
