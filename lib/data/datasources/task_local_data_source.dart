@@ -19,12 +19,12 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
     await database.insertTask(TasksCompanion(
       id: Value(task.id),
       title: Value(task.title),
-      description: Value(task.description),
+      description: Value.absentIfNull(task.description),
       isCompleted: Value(task.isCompleted),
       isFavourite: Value(task.isFavourite),
       createdAt: Value(task.createdAt),
       categoryId: Value(task.categoryId),
-      photoUrl: Value(task.photoUrl),
+      photoUrl: Value.absentIfNull(task.photoUrl),
     ) as Task);
   }
 
@@ -38,12 +38,12 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
     await database.updateTask(TasksCompanion(
       id: Value(task.id),
       title: Value(task.title),
-      description: Value(task.description),
+      description: Value.absentIfNull(task.description),
       isCompleted: Value(task.isCompleted),
       isFavourite: Value(task.isFavourite),
       createdAt: Value(task.createdAt),
       categoryId: Value(task.categoryId),
-      photoUrl: Value(task.photoUrl),
+      photoUrl: Value.absentIfNull(task.photoUrl),
     ) as Task);
   }
 

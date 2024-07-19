@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/database/database.dart';
 import '../data/datasources/category_local_data_source.dart';
+import '../data/datasources/flickr_service.dart';
 import '../data/datasources/task_local_data_source.dart';
 import '../data/repositories/category_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
@@ -17,7 +18,7 @@ import '../domain/usecases/update_category.dart';
 import '../domain/usecases/update_task.dart';
 import '../presentation/cubits/category_cubit.dart';
 import '../presentation/cubits/task_cubit.dart';
-import '../services/flickr_service.dart';
+
 
 final sl = GetIt.instance;
 
