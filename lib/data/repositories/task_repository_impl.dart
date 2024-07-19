@@ -15,6 +15,7 @@ class TaskRepositoryImpl implements TaskRepository {
       description: task.description,
       categoryId: task.categoryId,
       id: task.id,
+      photoUrl: task.photoUrl,
     ));
   }
 
@@ -33,6 +34,7 @@ class TaskRepositoryImpl implements TaskRepository {
       isCompleted: task.isCompleted,
       isFavourite: task.isFavourite,
       createdAt: task.createdAt,
+      photoUrl: task.photoUrl,
     ));
   }
 
@@ -47,6 +49,7 @@ class TaskRepositoryImpl implements TaskRepository {
       isFavourite: model.isFavourite,
       createdAt: model.createdAt,
       categoryId: model.categoryId,
+      photoUrl: model.photoUrl,
     )).toList();
   }
 }

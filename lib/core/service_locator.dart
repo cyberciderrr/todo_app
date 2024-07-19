@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/database/database.dart';
 import '../data/datasources/category_local_data_source.dart';
+import '../data/datasources/flickr_service.dart';
 import '../data/datasources/task_local_data_source.dart';
 import '../data/repositories/category_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
@@ -18,12 +19,11 @@ import '../domain/usecases/update_task.dart';
 import '../presentation/cubits/category_cubit.dart';
 import '../presentation/cubits/task_cubit.dart';
 
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
-
   sl.registerLazySingleton<AppDatabase>(() => AppDatabase());
-
 
   sl.registerLazySingleton<CategoryLocalDataSource>(
         () => CategoryLocalDataSourceImpl(database: sl()),
@@ -32,7 +32,6 @@ Future<void> init() async {
         () => TaskLocalDataSourceImpl(database: sl()),
   );
 
-
   sl.registerLazySingleton<CategoryRepository>(
         () => CategoryRepositoryImpl(localDataSource: sl()),
   );
@@ -40,7 +39,7 @@ Future<void> init() async {
         () => TaskRepositoryImpl(localDataSource: sl()),
   );
 
-  // Use Cases
+
   sl.registerLazySingleton(() => AddCategory(sl()));
   sl.registerLazySingleton(() => RemoveCategory(sl()));
   sl.registerLazySingleton(() => UpdateCategory(sl()));
@@ -50,7 +49,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateTask(sl()));
   sl.registerLazySingleton(() => GetTasksByCategory(sl()));
 
-  // Cubits
+
   sl.registerFactory(
         () => CategoryCubit(
       addCategoryUseCase: sl(),
@@ -69,7 +68,10 @@ Future<void> init() async {
     ),
   );
 
-  // Shared Preferences
+
+  sl.registerLazySingleton<FlickrService>(() => FlickrService());
+
+
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
 }
