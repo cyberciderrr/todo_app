@@ -33,7 +33,6 @@ class Tasks extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-
 @DriftDatabase(tables: [Categories, Tasks])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
